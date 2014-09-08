@@ -1,0 +1,9 @@
+cv2
+numpy
+sphinx
+sphinx_bootstrap_theme
+pip
+sphinxcontrib-exceltable
+python-pip git-core
+pika==0.9.8
+
