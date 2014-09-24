@@ -7,8 +7,10 @@ class TrackingSensorModule():
     def __init__(self):
         self.fourcc = cv2.cv.CV_FOURCC(*'XVID')  
         #self.video_writer = cv2.VideoWriter("altitude_tracking.avi", self.fourcc, 30, (640, 360))
-        
+        print "initialize in Tracking sensor module"
+
     def detectCircles(self, frame):
+       # print "detectcircles"
         gray = cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
         gray = cv2.GaussianBlur(gray,(3,3),0)
         canny = cv2.Canny(gray,100,200)
@@ -20,31 +22,39 @@ class TrackingSensorModule():
         return circles
     
     def drawTrackingImages(self, frame, circles):
+        #print "drawtrackingimages"
         for circle in circles:
             cv2.circle(frame,(circle[0],circle[1]),circle[2],(0,0,255))
             #str_rad = "radius: ",circle[2]
             #f.write(str(str_rad))
             #f.write("\n\n")
             cv2.line(frame, self.getCenter(),(circle[0],circle[1]),(255,0,0))
-	    cv2.putText(frame, "Radius:  "+str(circle[2]), (int(width/2), int(height/2)), 1, 1, (255,255,255))
-            cv2.putText(frame, "   Altitude:  "+str(altitude),(int(width/2.18), int(height/2.18)), 1, 1, (255,255,255))
+	    #cv2.putText(frame, "Radius:  "+str(circle[2]), (int(width/2), int(height/2)), 1, 1, (255,255,255))
+            #cv2.putText(frame, "   Altitude:  "+str(altitude),(int(width/2.18), int(height/2.18)), 1, 1, (255,255,255))
         return frame
     
     def displayDroneCamera(self,frame):
         #self.video_writer.write(frame)
+        #print "displayDroneCamera"
         cv2.imshow("Drone Camera",cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
         
     
     
     def calculatePosition(self, circles):
+        # If drone detected exactly "one" circle
         if circles.size == 3:
             x = circles[0][0]
             y = circles[0][1]
-            target_y = self.getCenter()[1] - y
             target_x = x - self.getCenter()[0]
+            target_y = self.getCenter()[1] - y
             kX = 1.0/320*0.1
-            kY = -1.0/320*0.1
-        return (kX*target_x, kY*target_y)
+            kY = -1.0/180*0.1 # because nagative means forward.
+            position = kX*target_x, kY*target_y
+        # if drone detected multiple circles
+        else :
+           print "in Cal Pos: "
+           position = 0.0, 0.0
+        return position
 
     def getCenter(self):
         width = 640

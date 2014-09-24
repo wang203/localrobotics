@@ -32,7 +32,8 @@ class ManualController(threading.Thread):
     def __init__(self, drone):
         threading.Thread.__init__(self)
         self.drone = drone
-        
+        print "Initialize in ManualC"
+
     def run(self):
         try:
             while True:
@@ -49,8 +50,9 @@ class ManualController(threading.Thread):
                     drone.move_backward()
                 if c == ' ':
                     drone.land()
-                if c == '\n':
+                if c == 'h':
                     drone.takeoff()
+                    drone.halt()
                 if c == 'q':
                     drone.turn_left()
                 if c == 'e':
@@ -76,6 +78,7 @@ class ManualController(threading.Thread):
 if __name__ == "__main__":
     '''Get the drone object'''
     drone = libardrone.ARDrone2()
+    #drone.set_speed(0.2)
     trackingSensorModule = TrackingSensorModule()
     '''configure drone: To be used to set all the manual configurations of the drone object'''
     drone.configureDrone()

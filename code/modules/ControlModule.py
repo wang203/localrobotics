@@ -14,11 +14,12 @@ class ControlModule():
     def __init__(self, drone, trackingSensorModule):
         self.drone = drone
         self.trackingSensorModule = trackingSensorModule
-        self.auto_control = False
+        #self.auto_control = False
+        self.auto_control = True
         #self.connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost', port=5672))
         #self.channel = self.connection.channel()
         #self.channel.exchange_declare(exchange="drone", exchange_type="direct", passive=False)
-           
+
 
     def sendCommand(self, command):
         self.drone.apply_command(command)
@@ -32,7 +33,7 @@ class ControlModule():
     def stopDrone(self):
         self.drone.land()
         self.drone.halt()
-        
+
     def autoControlDrone(self, circles):
         method_frame, header_frame, body = self.channel.basic_get('control')
         if method_frame:
@@ -47,16 +48,21 @@ class ControlModule():
                 self.hover()
         else:
             self.hover()
-    
+
+    def autoControlDroneLocal(self, circles):
+        #print "Auto Control Drone Local!"
+        if circles != None:
+            pos_x, pos_y = self.trackingSensorModule.calculatePosition(circles)
+            #print pos_x, pos_y
+            self.sendPosition(pos_x, pos_y)
+
     def completeController(self):
         try:
             #f = open('workfile.txt', 'w')
             d = {}
             while True:                               
 		frame = self.drone.get_image()
-                
-                   
-                
+
                 #f.write(str(datetime.datetime.now()))
                 #f.write("\n")
                 #str_alt =  "altitude : ",self.drone.get_navdata()[0]["altitude"]
@@ -71,8 +77,9 @@ class ControlModule():
                 
                 '''(x,y) = calculate_positions()'''
                 if self.auto_control:
-                    self.autoControlDrone(circles)                
-                
+                    #self.autoControlDrone(circles)
+                    self.autoControlDroneLocal(circles)
+
                 k = cv2.waitKey(1) & 0xFF
                 #print k, "################"
                 if k in command:
@@ -82,7 +89,6 @@ class ControlModule():
                 elif k == ord('x'):
                     self.auto_control = False
                 elif k == ord('q'):
-                    
                     break
         finally:
             self.stopDrone()       
