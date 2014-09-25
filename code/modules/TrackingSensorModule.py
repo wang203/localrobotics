@@ -49,10 +49,11 @@ class TrackingSensorModule():
             target_y = self.getCenter()[1] - y
             kX = 1.0/320*0.1
             kY = -1.0/180*0.1 # because nagative means forward.
-            position = kX*target_x, kY*target_y
+            #position = kX*target_x, kY*target_y
+            position = round(kX*target_x, 2), round(kY*target_y, 2)
         # if drone detected multiple circles
         else :
-           print "in Cal Pos: "
+           #print "Stop moving.. "
            position = 0.0, 0.0
         return position
 

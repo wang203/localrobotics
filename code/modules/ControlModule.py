@@ -50,11 +50,20 @@ class ControlModule():
             self.hover()
 
     def autoControlDroneLocal(self, circles):
-        #print "Auto Control Drone Local!"
+       # The threshold to stop the drone when distance is enough close to the target object
+        threshold = 0.001
+
         if circles != None:
             pos_x, pos_y = self.trackingSensorModule.calculatePosition(circles)
-            #print pos_x, pos_y
-            self.sendPosition(pos_x, pos_y)
+            # compute distance between a drone and target
+            distance = pow(pos_x, 2) + pow(pos_y, 2)
+            if distance > threshold:
+                self.sendPosition(pos_x, pos_y)
+            else:
+                self.sendPosition(0.0, 0.0)
+        # No detected circle, stop the drone
+        else:
+            self.sendPosition(0.0, 0.0)
 
     def completeController(self):
         try:

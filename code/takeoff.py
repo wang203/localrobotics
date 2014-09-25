@@ -7,8 +7,7 @@ import threading
     
 if __name__ == "__main__":
     drone = libardrone.ARDrone2()
-#    drone.set_speed(0.2)
-    drone.set_speed(0.02)
+    drone.set_speed(0.1)
     time.sleep(1)
     drone.takeoff()
     drone.halt()
